@@ -1,5 +1,4 @@
-import _ from 'lodash';
-import { ContextWithStates } from './state-types';
+import { Context } from './state-types';
 
 type PlayerStateKey = 'stop' | 'play';
 
@@ -7,68 +6,75 @@ interface PlayerState {
   key: PlayerStateKey;
   play: () => PlayerState | void;
   stop: () => PlayerState | void;
+  forward: () => PlayerState | void;
+  backward: () => PlayerState | void;
 }
 
 class Stop implements PlayerState {
   key: PlayerStateKey = 'stop';
-  
-  constructor(private context: Player) { }
+
+  constructor(private context: Player) {}
 
   play() {
-      console.log('>>>> [Stop]: play');
-      this.context.time = Date.now();
-      this.context.changeStateWithLog('play');
-      console.log(`>>>> Time: ${this.context.time}`);
+    console.log('>>>> [Stop]: play');
+    this.context.time = Date.now();
+    this.context.changeState(new Play(this.context));
+    console.log(`>>>> Time: ${this.context.time}`);
   }
 
-  stop() { 
-      console.log('>>>> [Stop]: stop'); 
-      return; 
+  stop() {
+    console.log('>>>> [Stop]: stop');
+    return;
   }
+
+  forward: () => void | PlayerState;
+  backward: () => void | PlayerState;
 }
 
 class Play implements PlayerState {
-  key: PlayerStateKey = 'play'
+  key: PlayerStateKey = 'play';
 
-  constructor(private context: Player) { }
+  constructor(private context: Player) {}
 
   play() {
-      console.log('>>>> [Play]: play');
-      return;
+    console.log('>>>> [Play]: play');
+    return;
   }
   stop() {
-      console.log('>>>> [Play]: stop');
-      this.context.time = Date.now();
-      this.context.changeStateWithLog('stop');
-      console.log(`>>>> Time: ${this.context.time}`);
+    console.log('>>>> [Play]: stop');
+    this.context.time = Date.now();
+    this.context.changeState(new Stop(this.context));
+    console.log(`>>>> Time: ${this.context.time}`);
   }
+
+  forward: () => void | PlayerState;
+  backward: () => void | PlayerState;
 }
 
-export default class Player extends ContextWithStates<PlayerState, PlayerStateKey> {
-  private timestamps: Array<number> = [];
-
-  states: Record<PlayerStateKey, PlayerState> = {
-      play: new Play(this),
-      stop: new Stop(this),
-  };
+export default class Player extends Context<PlayerState, PlayerStateKey> {
+  private timestamps: Array<number> = [Date.now()];
 
   constructor(state?: PlayerState) {
-      super();
-      this.state = state || this.states.stop;
+    super();
+    this.state = state || new Stop(this);
   }
 
-  get time() {
-      if (_.size(this.timestamps) > 1) {
-          return _.chain(this.timestamps).takeRight(2).reduce((acc, x) => x - acc).value();
-      }
-
+  get time(): number {
+    if (this.timestamps.length === 0) {
       return -1;
+    }
+
+    return this.timestamps
+      .slice(-2)
+      .reduce((acc: number, x: number) => x - acc);
   }
 
   set time(val: number) {
-      this.timestamps = [...this.timestamps, val];
+    this.timestamps = [...this.timestamps, val];
   }
 
   play = () => this.state.play();
   stop = () => this.state.stop();
+  forward = () => this.state.forward();
+  backward = () => this.state.backward();
 }

@@ -1,53 +1,75 @@
-import _ from 'lodash';
-
 export default class Player {
-  private timestamps: Array<number> = [];
+  private timestamps: Array<number> = [Date.now()];
 
   private isPlaying: boolean;
-  private isStopped: boolean;
+  private isStopped: boolean = true;
+  private isForwarding: boolean;
+  private isBackwarding: boolean;
 
-  constructor() {
-      this.isStopped = true;
-      this.isPlaying = false;
-  }
-
-  get time() {
-      if (_.size(this.timestamps) > 1) {
-          return _.chain(this.timestamps).takeRight(2).reduce((acc, x) => x - acc).value();
-      }
-
+  get time(): number {
+    if (this.timestamps.length === 0) {
       return -1;
+    }
+
+    return this.timestamps
+      .slice(-2)
+      .reduce((acc: number, x: number) => x - acc);
   }
 
   set time(val: number) {
-      this.timestamps = [...this.timestamps, val];
+    this.timestamps = [...this.timestamps, val];
   }
 
-  play() {
-      if (this.isStopped) {
-          this.time = Date.now();
+  play(): void {
+    if (!this.isPlaying) {
+      this.time = Date.now();
+    }
 
-          this.isPlaying = true;
-          this.isStopped = false;
+    if (this.isStopped) {
+      console.log('>>>> [Stop]: play');
+    } else if (this.isForwarding) {
+      console.log('>>>> [Forward]: play');
+    } else if (this.isBackwarding) {
+      console.log('>>>> [Backwards]: play');
+    } else {
+      console.log('>>>> [Play]: play');
+    }
 
-          console.log('>>>> [Stop]: play');
-          console.log(`>>>> Time: ${this.time}`);
-      } else {
-          console.log('>>>> [Play]: play');
-      }
+    if (!this.isPlaying) {
+      this.isPlaying = true;
+      this.isStopped = false;
+      this.isForwarding = false;
+      this.isBackwarding = false;
+
+      console.log(`>>>> Time: ${this.time}`);
+    }
   }
 
-  stop() {
-      if (this.isPlaying) {
-          this.time = Date.now();
+  stop(): void {
+    if (!this.isStopped) {
+      this.time = Date.now();
+    }
 
-          this.isStopped = true;
-          this.isPlaying = false;
+    if (this.isPlaying) {
+      console.log('>>>> [Play]: stop');
+    } else if (this.isForwarding) {
+      console.log('>>>> [Forward]: stop');
+    } else if (this.isBackwarding) {
+      console.log('>>>> [Backwards]: stop');
+    } else {
+      console.log('>>>> [Stop]: Stop');
+    }
 
-          console.log('>>>> [Play]: stop');
-          console.log(`>>>> Time: ${this.time}`);
-      } else {
-          console.log('>>>> [Stop]: stop');
-      }
+    if (!this.isStopped) {
+      this.isStopped = true;
+      this.isPlaying = false;
+      this.isForwarding = false;
+      this.isBackwarding = false;
+
+      console.log(`>>>> Time: ${this.time}`);
+    }
   }
+
+  forward(): void {}
+  backward(): void {}
 }
