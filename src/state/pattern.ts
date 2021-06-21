@@ -1,13 +1,13 @@
 import { Context } from './state-types';
 
-type PlayerStateKey = 'stop' | 'play';
+type PlayerStateKey = 'stop' | 'play' | 'forward' | 'rewind';
 
 interface PlayerState {
   key: PlayerStateKey;
   play: () => PlayerState | void;
   stop: () => PlayerState | void;
   forward: () => PlayerState | void;
-  backward: () => PlayerState | void;
+  rewind: () => PlayerState | void;
 }
 
 class Stop implements PlayerState {
@@ -28,7 +28,7 @@ class Stop implements PlayerState {
   }
 
   forward: () => void | PlayerState;
-  backward: () => void | PlayerState;
+  rewind: () => void | PlayerState;
 }
 
 class Play implements PlayerState {
@@ -48,7 +48,7 @@ class Play implements PlayerState {
   }
 
   forward: () => void | PlayerState;
-  backward: () => void | PlayerState;
+  rewind: () => void | PlayerState;
 }
 
 export default class Player extends Context<PlayerState, PlayerStateKey> {
@@ -76,5 +76,5 @@ export default class Player extends Context<PlayerState, PlayerStateKey> {
   play = () => this.state.play();
   stop = () => this.state.stop();
   forward = () => this.state.forward();
-  backward = () => this.state.backward();
+  rewind = () => this.state.rewind();
 }
