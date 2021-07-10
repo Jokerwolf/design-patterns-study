@@ -1,4 +1,4 @@
-import { Context } from './state-types';
+import { Context } from './types';
 
 type PlayerStateKey = 'stop' | 'play' | 'forward' | 'rewind';
 
