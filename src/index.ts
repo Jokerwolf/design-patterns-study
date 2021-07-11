@@ -1,6 +1,6 @@
 import prompts from 'prompts';
 
-(async () => {
+async function runApp() {
   const response = await prompts({
     name: 'pattern',
     type: 'select',
@@ -8,8 +8,11 @@ import prompts from 'prompts';
     choices: [
       { title: 'State', value: 'state' },
       { title: 'Strategy', value: 'strategy' },
+      { title: 'Observer', value: 'observer' },
     ],
   });
 
-  (await import(`./${response.pattern}`)).default();
-})();
+  (await import(`./${response.pattern}`)).default().then(runApp);
+}
+
+runApp();

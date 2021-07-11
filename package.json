@@ -6,22 +6,21 @@
   "scripts": {
     "build": "npm run build-ts",
     "build-ts": "./node_modules/.bin/tsc",
-    "copy-static-assets": "./node_modules/.bin/ts-node copyStaticAssets.ts",
     "debug": "npm run build && npm run watch-debug",
     "serve": "./node_modules/.bin/node dist/index.js",
-    "serve-debug": "./node_modules/.bin/nodemon --inspect dist/index.js",
+    "serve-debug": "./node_modules/.bin/nodemon -I --inspect dist/index.js",
     "start": "npm run serve",
-    "test": "./node_modules/.bin/jest --forceExit --coverage --verbose",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-sass\" \"npm run watch-ts\" \"npm run watch-node\"",
-    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-sass\" \"npm run watch-ts\" \"npm run serve-debug\"",
-    "watch-node": "./node_modules/.bin/nodemon dist/index.js",
-    "watch-test": "npm run test -- --watchAll",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\"",
+    "watch-node": "./node_modules/.bin/nodemon -I dist/index.js",
     "watch-ts": "./node_modules/.bin/tsc -w"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "concurrently": "^6.2.0",
+    "nodemon": "^2.0.11",
     "prompts": "^2.4.1",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.4"

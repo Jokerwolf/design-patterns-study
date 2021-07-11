@@ -17,4 +17,6 @@ export default function () {
   ].forEach((player) => {
     player.play();
   });
+
+  return Promise.resolve();
 }
